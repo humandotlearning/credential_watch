@@ -1,0 +1,22 @@
+[project]
+name = "credentialwatch_agent"
+version = "0.1.0"
+description = "MCP-powered agent system for monitoring healthcare provider credentials"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.0.10",
+    "langchain-openai>=0.0.5",
+    "pydantic>=2.0.0",
+    "mcp>=0.1.0",
+    "gradio>=4.0.0",
+    "python-dotenv>=1.0.0",
+    "httpx>=0.25.0" 
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/credentialwatch_agent"]
