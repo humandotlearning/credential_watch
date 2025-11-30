@@ -9,7 +9,7 @@ dependencies = [
     "langchain-openai>=0.0.5",
     "pydantic>=2.0.0",
     "mcp>=0.1.0",
-    "gradio[mcp]>=4.0.0",
+    "gradio[mcp]>=5.0.0",
     "python-dotenv>=1.0.0",
     "httpx>=0.25.0" 
 ]
