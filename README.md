@@ -7,7 +7,7 @@ sdk: gradio
 python_version: 3.10
 sdk_version: 6.0.0
 app_file: src/credentialwatch_agent/main.py
-short_description: "MCP-enabled Gradio Space for healthcare credential monitoring."
+short_description: "MCP-enabled Gradio Space for credential monitoring."
 tags:
   - mcp
   - gradio
