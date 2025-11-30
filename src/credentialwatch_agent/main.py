@@ -105,7 +105,7 @@ if __name__ == "__main__":
     
     try:
         loop.run_until_complete(mcp_client.connect())
-        demo.launch(server_name="0.0.0.0", server_port=7860)
+        demo.launch(server_name="0.0.0.0", server_port=7860, mcp_server=True)
     except KeyboardInterrupt:
         pass
     finally:

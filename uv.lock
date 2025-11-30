@@ -338,7 +338,7 @@ name = "credentialwatch-agent"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "gradio" },
+    { name = "gradio", extra = ["mcp"] },
     { name = "httpx" },
     { name = "langchain-openai" },
     { name = "langgraph" },
@@ -349,7 +349,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "gradio", specifier = ">=4.0.0" },
+    { name = "gradio", extras = ["mcp"], specifier = ">=4.0.0" },
     { name = "httpx", specifier = ">=0.25.0" },
     { name = "langchain-openai", specifier = ">=0.0.5" },
     { name = "langgraph", specifier = ">=0.0.10" },
@@ -508,6 +508,12 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/65/13/f2bfe1237b8700f63e21c5e39f2843ac8346f7ba4525b582f30f40249863/gradio-6.0.1.tar.gz", hash = "sha256:5d02e6ac34c67aea26b938b8628c8f9f504871392e71f2db559ab8d6799bdf69", size = 36440914, upload-time = "2025-11-25T18:44:04.24Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/09/21/27ae5f4b2191a5d58707fc610e67453781a2b948a675a7cf06c99497ffa1/gradio-6.0.1-py3-none-any.whl", hash = "sha256:0f98dc8b414a3f3773cbf3caf5a354507c8ae309ed8266e2f30ca9fa53f379b8", size = 21559963, upload-time = "2025-11-25T18:44:01.544Z" },
+]
+
+[package.optional-dependencies]
+mcp = [
+    { name = "mcp" },
+    { name = "pydantic" },
 ]
 
 [[package]]
