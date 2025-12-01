@@ -10,21 +10,24 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
 from credentialwatch_agent.main import demo, mcp_client
 
-# Create FastAPI app
-app = FastAPI()
+from contextlib import asynccontextmanager
 
-@app.on_event("startup")
-async def startup_event():
-    """Connect to MCP servers on startup."""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifespan."""
     print("Connecting to MCP servers...")
-    # We can't use run_until_complete here because the loop is already running
-    await mcp_client.connect()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Close connections on shutdown."""
+    try:
+        await mcp_client.connect()
+    except Exception as e:
+        print(f"Error connecting to MCP servers: {e}")
+    
+    yield
+    
     print("Closing MCP connections...")
     await mcp_client.close()
+
+# Create FastAPI app with lifespan
+app = FastAPI(lifespan=lifespan)
 
 # Mount Gradio app
 # path="/" mounts it at the root

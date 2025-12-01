@@ -36,7 +36,7 @@ class MCPClient:
             )
             await self._sessions["npi"].initialize()
         except Exception as e:
-            print(f"Failed to connect to NPI MCP at {self.npi_url}: {e}")
+            print(f"Warning: Failed to connect to NPI MCP at {self.npi_url}. Using mock data. Error: {e}")
 
         # Connect to Cred DB MCP
         try:
@@ -46,7 +46,7 @@ class MCPClient:
             )
             await self._sessions["cred_db"].initialize()
         except Exception as e:
-            print(f"Failed to connect to Cred DB MCP at {self.cred_db_url}: {e}")
+            print(f"Warning: Failed to connect to Cred DB MCP at {self.cred_db_url}. Using mock data. Error: {e}")
 
         # Connect to Alert MCP
         try:
@@ -56,7 +56,7 @@ class MCPClient:
             )
             await self._sessions["alert"].initialize()
         except Exception as e:
-            print(f"Failed to connect to Alert MCP at {self.alert_url}: {e}")
+            print(f"Warning: Failed to connect to Alert MCP at {self.alert_url}. Using mock data. Error: {e}")
 
     async def close(self):
         """Closes all connections."""
