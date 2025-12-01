@@ -47,9 +47,15 @@ async def run_chat_turn(message: str, history: List[List[str]]) -> str:
     """
     # Convert history to LangChain format
     messages = []
-    for human, ai in history:
-        messages.append(HumanMessage(content=human))
-        messages.append(AIMessage(content=ai))
+    for item in history:
+        if isinstance(item, (list, tuple)) and len(item) >= 2:
+            human = item[0]
+            ai = item[1]
+            messages.append(HumanMessage(content=str(human)))
+            messages.append(AIMessage(content=str(ai)))
+        else:
+            # Fallback for unexpected format
+            print(f"Warning: Skipping malformed history item: {item}")
     messages.append(HumanMessage(content=message))
     
     initial_state = {"messages": messages}
