@@ -1,11 +1,14 @@
 from typing import TypedDict, List, Optional, Any, Dict, Annotated
 import operator
 
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
+
 class AgentState(TypedDict):
     """
     Common state for agents.
     """
-    messages: List[Dict[str, Any]]
+    messages: Annotated[List[BaseMessage], add_messages]
     # Add other common fields if needed
 
 class ExpirySweepState(TypedDict):
