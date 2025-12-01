@@ -107,14 +107,7 @@ with gr.Blocks(title="CredentialWatch") as demo:
 # or we can wrap the demo launch.
 
 if __name__ == "__main__":
-    # Simple async wrapper to run the app
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    
-    try:
-        loop.run_until_complete(mcp_client.connect())
-        demo.launch(server_name="0.0.0.0", server_port=7860, mcp_server=True)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        loop.run_until_complete(mcp_client.close())
+    # Launch the demo. 
+    # Note: We rely on lazy connection in run_chat_turn/run_expiry_sweep to connect mcp_client.
+    # This avoids creating a conflicting event loop before Gradio starts.
+    demo.launch(server_name="0.0.0.0", server_port=7860, mcp_server=True)

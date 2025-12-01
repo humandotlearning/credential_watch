@@ -29,6 +29,19 @@ class MCPClient:
             if self._connected:
                 return
 
+            # Check if running on HF Spaces and using default localhost URLs
+            is_hf = os.getenv("SPACE_ID") is not None
+            
+            # Helper to check if URL is localhost
+            def is_localhost(url):
+                return "localhost" in url or "127.0.0.1" in url
+
+            if is_hf and (is_localhost(self.npi_url) or is_localhost(self.cred_db_url) or is_localhost(self.alert_url)):
+                print("Detected Hugging Face Spaces environment with localhost URLs.")
+                print("Skipping actual MCP connections and defaulting to mock data.")
+                self._connected = True
+                return
+
             # Connect to NPI MCP
             try:
                 # Note: mcp.client.sse.sse_client is a context manager that yields (read_stream, write_stream)
@@ -42,7 +55,7 @@ class MCPClient:
                 import traceback
                 print(f"Warning: Failed to connect to NPI MCP at {self.npi_url}. Using mock data.")
                 print(f"Error details: {e}")
-                traceback.print_exc()
+                # traceback.print_exc() # Reduce noise
 
             # Connect to Cred DB MCP
             try:
@@ -55,7 +68,7 @@ class MCPClient:
                 import traceback
                 print(f"Warning: Failed to connect to Cred DB MCP at {self.cred_db_url}. Using mock data.")
                 print(f"Error details: {e}")
-                traceback.print_exc()
+                # traceback.print_exc()
 
             # Connect to Alert MCP
             try:
@@ -68,7 +81,7 @@ class MCPClient:
                 import traceback
                 print(f"Warning: Failed to connect to Alert MCP at {self.alert_url}. Using mock data.")
                 print(f"Error details: {e}")
-                traceback.print_exc()
+                # traceback.print_exc()
             
             self._connected = True
 
