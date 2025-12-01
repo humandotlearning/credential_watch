@@ -20,43 +20,48 @@ class MCPClient:
         
         self._exit_stack = AsyncExitStack()
         self._sessions: Dict[str, ClientSession] = {}
+        self._connected = False
+        self._connect_lock = asyncio.Lock()
 
     async def connect(self):
-        """Establishes connections to all MCP servers."""
-        # In a real app, we might want to connect lazily or in parallel.
-        # For simplicity, we'll try to connect to all.
-        
-        # Connect to NPI MCP
-        try:
-            # Note: mcp.client.sse.sse_client is a context manager that yields (read_stream, write_stream)
-            # We need to keep the context open.
-            npi_transport = await self._exit_stack.enter_async_context(sse_client(self.npi_url))
-            self._sessions["npi"] = await self._exit_stack.enter_async_context(
-                ClientSession(npi_transport[0], npi_transport[1])
-            )
-            await self._sessions["npi"].initialize()
-        except Exception as e:
-            print(f"Warning: Failed to connect to NPI MCP at {self.npi_url}. Using mock data. Error: {e}")
+        """Establishes connections to all MCP servers. Idempotent."""
+        async with self._connect_lock:
+            if self._connected:
+                return
 
-        # Connect to Cred DB MCP
-        try:
-            cred_transport = await self._exit_stack.enter_async_context(sse_client(self.cred_db_url))
-            self._sessions["cred_db"] = await self._exit_stack.enter_async_context(
-                ClientSession(cred_transport[0], cred_transport[1])
-            )
-            await self._sessions["cred_db"].initialize()
-        except Exception as e:
-            print(f"Warning: Failed to connect to Cred DB MCP at {self.cred_db_url}. Using mock data. Error: {e}")
+            # Connect to NPI MCP
+            try:
+                # Note: mcp.client.sse.sse_client is a context manager that yields (read_stream, write_stream)
+                # We need to keep the context open.
+                npi_transport = await self._exit_stack.enter_async_context(sse_client(self.npi_url))
+                self._sessions["npi"] = await self._exit_stack.enter_async_context(
+                    ClientSession(npi_transport[0], npi_transport[1])
+                )
+                await self._sessions["npi"].initialize()
+            except Exception as e:
+                print(f"Warning: Failed to connect to NPI MCP at {self.npi_url}. Using mock data. Error: {e}")
 
-        # Connect to Alert MCP
-        try:
-            alert_transport = await self._exit_stack.enter_async_context(sse_client(self.alert_url))
-            self._sessions["alert"] = await self._exit_stack.enter_async_context(
-                ClientSession(alert_transport[0], alert_transport[1])
-            )
-            await self._sessions["alert"].initialize()
-        except Exception as e:
-            print(f"Warning: Failed to connect to Alert MCP at {self.alert_url}. Using mock data. Error: {e}")
+            # Connect to Cred DB MCP
+            try:
+                cred_transport = await self._exit_stack.enter_async_context(sse_client(self.cred_db_url))
+                self._sessions["cred_db"] = await self._exit_stack.enter_async_context(
+                    ClientSession(cred_transport[0], cred_transport[1])
+                )
+                await self._sessions["cred_db"].initialize()
+            except Exception as e:
+                print(f"Warning: Failed to connect to Cred DB MCP at {self.cred_db_url}. Using mock data. Error: {e}")
+
+            # Connect to Alert MCP
+            try:
+                alert_transport = await self._exit_stack.enter_async_context(sse_client(self.alert_url))
+                self._sessions["alert"] = await self._exit_stack.enter_async_context(
+                    ClientSession(alert_transport[0], alert_transport[1])
+                )
+                await self._sessions["alert"].initialize()
+            except Exception as e:
+                print(f"Warning: Failed to connect to Alert MCP at {self.alert_url}. Using mock data. Error: {e}")
+            
+            self._connected = True
 
     async def close(self):
         """Closes all connections."""

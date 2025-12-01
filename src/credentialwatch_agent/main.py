@@ -16,6 +16,7 @@ async def run_expiry_sweep(window_days: int = 90) -> Dict[str, Any]:
     """
     Runs the expiry sweep workflow.
     """
+    await mcp_client.connect()
     print(f"Starting expiry sweep for {window_days} days...")
     # Initialize state
     initial_state = {
@@ -45,6 +46,7 @@ async def run_chat_turn(message: str, history: List[List[str]]) -> str:
     """
     Runs a turn of the interactive query agent.
     """
+    await mcp_client.connect()
     # Convert history to LangChain format
     messages = []
     for item in history:
