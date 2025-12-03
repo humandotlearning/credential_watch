@@ -1,21 +1,27 @@
 import asyncio
 import os
+import logging
 from typing import Dict, Any, List
 import gradio as gr
 from dotenv import load_dotenv
+load_dotenv(".env.local")
+load_dotenv()
+
 from langchain_core.messages import HumanMessage, AIMessage
+
+# Configure logging for main
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("credentialwatch_agent")
 
 from credentialwatch_agent.mcp_client import mcp_client
 from credentialwatch_agent.agents.expiry_sweep import expiry_sweep_graph
 from credentialwatch_agent.agents.interactive_query import interactive_query_graph
 
-# Load environment variables
-load_dotenv()
-
 async def run_expiry_sweep(window_days: int = 90) -> Dict[str, Any]:
     """
     Runs the expiry sweep workflow.
     """
+    logger.info(f"Starting expiry sweep for {window_days} days...")
     await mcp_client.connect()
     print(f"Starting expiry sweep for {window_days} days...")
     # Initialize state
@@ -35,7 +41,9 @@ async def run_expiry_sweep(window_days: int = 90) -> Dict[str, Any]:
     # For this hackathon, we'll assume the graph handles it or we pass it via a modified state if needed.
     # The current implementation of fetch_expiring_credentials uses a hardcoded 90 or tool default.
     
+    logger.info("Invoking expiry_sweep_graph...")
     final_state = await expiry_sweep_graph.ainvoke(initial_state)
+    logger.info("Expiry sweep graph completed.")
     return {
         "summary": final_state.get("summary"),
         "alerts_created": final_state.get("alerts_created"),
@@ -46,6 +54,7 @@ async def run_chat_turn(message: str, history: List[List[str]]) -> str:
     """
     Runs a turn of the interactive query agent.
     """
+    logger.info(f"Starting chat turn with message: {message}")
     await mcp_client.connect()
     # Convert history to LangChain format
     messages = []
@@ -63,7 +72,9 @@ async def run_chat_turn(message: str, history: List[List[str]]) -> str:
     initial_state = {"messages": messages}
     
     # Run the graph
+    logger.info("Invoking interactive_query_graph...")
     final_state = await interactive_query_graph.ainvoke(initial_state)
+    logger.info("Interactive query graph completed.")
     
     # Extract the last message
     last_message = final_state["messages"][-1]
@@ -74,11 +85,13 @@ async def run_chat_turn(message: str, history: List[List[str]]) -> str:
 async def start_app():
     """Initializes the app and connects to MCP servers."""
     print("Connecting to MCP servers...")
+    logger.info("Initializing app and connecting to MCP servers...")
     await mcp_client.connect()
 
 async def stop_app():
     """Closes connections."""
     print("Closing MCP connections...")
+    logger.info("Stopping app and closing MCP connections...")
     await mcp_client.close()
 
 with gr.Blocks(title="CredentialWatch") as demo:

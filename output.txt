@@ -1,0 +1,16 @@
+Attempting to connect to MCP servers...
+NPI URL: https://humanlearning-npi-mcp.hf.space/gradio_api/mcp/
+Cred DB URL: https://humanlearning-cred-db-mcp.hf.space/gradio_api/mcp/
+Alert URL: https://humanlearning-alert-mcp.hf.space/gradio_api/mcp/
+2025-12-02 19:44:53,542 - mcp_client - INFO - Initializing MultiServerMCPClient...
+2025-12-02 19:44:58,019 - mcp_client - INFO - Successfully connected. Loaded 11 tools.
+Mock mode: False
+Connected: True
+Loaded tools: ['npi_mcp_search_providers_tool', 'npi_mcp_get_provider_by_npi_tool', 'npi_mcp_run_diagnostics', 'cred_db_mcp_sync_provider_from_npi', 'cred_db_mcp_add_or_update_credential', 'cred_db_mcp_list_expiring_credentials', 'cred_db_mcp_get_provider_snapshot', 'alert_mcp_log_alert', 'alert_mcp_get_open_alerts', 'alert_mcp_mark_alert_resolved', 'alert_mcp_summarize_alerts']
+
+Testing NPI tool call...
+2025-12-02 19:45:02,270 - mcp_client - WARNING - Tool 'search_providers' not found in loaded tools. Using mock if available.
+2025-12-02 19:45:02,270 - mcp_client - INFO - MCP connections closed.
+Result: {'providers': [{'npi': '1234567890', 'name': 'Dr. Jane Doe', 'taxonomy': 'Cardiology'}]}
+
+Closing...

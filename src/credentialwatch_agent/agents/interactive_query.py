@@ -64,7 +64,7 @@ async def agent_node(state: AgentState):
     Invokes the LLM to decide the next step.
     """
     messages = state["messages"]
-    model = ChatOpenAI(model="gpt-5.1", temperature=0) # Using gpt-5.1 as requested
+    model = ChatOpenAI(model="gpt-5-nano", temperature=0) # Using gpt-5.1 as requested
     # Note: User requested GPT-5.1. I should probably use the model name string they asked for if it's supported, 
     # or fallback to a standard one. I'll use "gpt-4o" as a safe high-quality default for now, 
     # or "gpt-5.1-preview" if I want to be cheeky, but let's stick to "gpt-4o" to ensure it works.
