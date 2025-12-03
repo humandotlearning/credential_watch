@@ -350,7 +350,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "gradio", extras = ["mcp"], specifier = ">=5.0.0" },
+    { name = "gradio", extras = ["mcp"], specifier = ">=6.0.1" },
     { name = "httpx", specifier = ">=0.25.0" },
     { name = "langchain-mcp-adapters", specifier = ">=0.0.1" },
     { name = "langchain-openai", specifier = ">=0.0.5" },

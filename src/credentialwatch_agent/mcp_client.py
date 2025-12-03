@@ -23,12 +23,6 @@ class MCPClient:
         
         # Configure logger
         self.logger = logging.getLogger("mcp_client")
-        if not self.logger.handlers:
-            handler = logging.StreamHandler()
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            handler.setFormatter(formatter)
-            self.logger.addHandler(handler)
-            self.logger.setLevel(logging.INFO)
 
     async def connect(self):
         """Establishes connections to all MCP servers."""
