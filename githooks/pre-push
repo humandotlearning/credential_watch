@@ -1,0 +1,19 @@
+#!/bin/sh
+
+remote="$1"
+url="$2"
+
+# Avoid infinite recursion if the push is already to 'hf'
+if [ "$remote" = "hf" ]; then
+    exit 0
+fi
+
+# Check if 'hf' remote exists
+if git remote | grep -q "^hf$"; then
+    echo "Pushing to Hugging Face Space..."
+    git push hf main
+else
+    echo "Remote 'hf' not found. Skipping push to Hugging Face Space."
+fi
+
+exit 0
