@@ -15,7 +15,7 @@ logger = logging.getLogger("credentialwatch_agent")
 
 from credentialwatch_agent.mcp_client import mcp_client
 from credentialwatch_agent.agents.expiry_sweep import expiry_sweep_graph
-from credentialwatch_agent.agents.interactive_query import interactive_query_graph
+from credentialwatch_agent.agents.interactive_query import get_interactive_query_graph
 
 async def run_expiry_sweep(window_days: int = 90) -> Dict[str, Any]:
     """
@@ -73,6 +73,7 @@ async def run_chat_turn(message: str, history: List[List[str]]) -> str:
     
     # Run the graph
     logger.info("Invoking interactive_query_graph...")
+    interactive_query_graph = get_interactive_query_graph()
     final_state = await interactive_query_graph.ainvoke(initial_state)
     logger.info("Interactive query graph completed.")
     

@@ -181,5 +181,9 @@ class MCPClient:
 
         return {"error": "Mock data not found for this tool"}
 
+    def get_tools(self) -> List[Any]:
+        """Returns the list of available tools."""
+        return list(self._tools.values())
+
 # Global instance
 mcp_client = MCPClient()
