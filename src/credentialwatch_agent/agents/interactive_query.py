@@ -17,7 +17,7 @@ from credentialwatch_agent.agents.common import AgentState
 # We can use the prebuilt AgentState or our custom one.
 # For simplicity, we'll use a state compatible with ToolNode (requires 'messages').
 
-def get_interactive_query_graph():
+def get_interactive_query_graph(checkpointer=None):
     """
     Factory function to create the graph with dynamic tools.
     """
@@ -57,4 +57,4 @@ def get_interactive_query_graph():
     )
     workflow.add_edge("tools", "agent")
 
-    return workflow.compile()
+    return workflow.compile(checkpointer=checkpointer)

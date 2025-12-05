@@ -9,9 +9,15 @@ load_dotenv()
 
 from langchain_core.messages import HumanMessage, AIMessage
 
+import uuid
+from langgraph.checkpoint.memory import InMemorySaver
+
 # Configure logging for main
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("credentialwatch_agent")
+
+# In-memory checkpointer to preserve tool call context within a session
+checkpointer = InMemorySaver()
 
 from credentialwatch_agent.mcp_client import mcp_client
 from credentialwatch_agent.agents.expiry_sweep import expiry_sweep_graph
@@ -50,31 +56,23 @@ async def run_expiry_sweep(window_days: int = 90) -> Dict[str, Any]:
         "errors": final_state.get("errors")
     }
 
-async def run_chat_turn(message: str, history: List[List[str]]) -> str:
+async def run_chat_turn(message: str, history: List[List[str]], thread_id: str) -> str:
     """
     Runs a turn of the interactive query agent.
+    Uses checkpointer with thread_id to preserve tool call context within a session.
     """
-    logger.info(f"Starting chat turn with message: {message}")
+    logger.info(f"Starting chat turn with message: {message} (thread_id: {thread_id})")
     await mcp_client.connect()
-    # Convert history to LangChain format
-    messages = []
-    for item in history:
-        if isinstance(item, (list, tuple)) and len(item) >= 2:
-            human = item[0]
-            ai = item[1]
-            messages.append(HumanMessage(content=str(human)))
-            messages.append(AIMessage(content=str(ai)))
-        else:
-            # Fallback for unexpected format
-            print(f"Warning: Skipping malformed history item: {item}")
-    messages.append(HumanMessage(content=message))
     
-    initial_state = {"messages": messages}
+    # Only pass the new message - checkpointer handles full history including tool calls
+    initial_state = {"messages": [HumanMessage(content=message)]}
     
-    # Run the graph
+    # Run the graph with checkpointer
     logger.info("Invoking interactive_query_graph...")
-    interactive_query_graph = get_interactive_query_graph()
-    final_state = await interactive_query_graph.ainvoke(initial_state)
+    interactive_query_graph = get_interactive_query_graph(checkpointer=checkpointer)
+    
+    config = {"configurable": {"thread_id": thread_id}}
+    final_state = await interactive_query_graph.ainvoke(initial_state, config=config)
     logger.info("Interactive query graph completed.")
     
     # Extract the last message
@@ -100,7 +98,11 @@ with gr.Blocks(title="CredentialWatch") as demo:
     
     with gr.Tab("Interactive Query"):
         gr.Markdown("Ask questions about provider credentials, e.g., 'Who has expiring licenses?'")
-        chat_interface = gr.ChatInterface(fn=run_chat_turn)
+        thread_id_state = gr.State(lambda: str(uuid.uuid4()))
+        chat_interface = gr.ChatInterface(
+            fn=run_chat_turn,
+            additional_inputs=[thread_id_state]
+        )
 
     with gr.Tab("Expiry Sweep"):
         gr.Markdown("Run a batch sweep to check for expiring credentials and create alerts.")

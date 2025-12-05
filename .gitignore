@@ -3,7 +3,4 @@
 __pycache__/
 *.pyc
 .DS_Store
-
 *.cpython*
-*.pyc   
-*.cpython-313.pyc
